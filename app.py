@@ -132,13 +132,21 @@ elif data_input_mode == 'Manual Data Entry':
         st.session_state.editable_df,
         column_config={
             "Department": st.column_config.TextColumn("Department"),
-            # FIX: REMOVED custom formatting to avoid ###,### error
             "Allocated Budget": st.column_config.NumberColumn("Allocated Budget"),
             "Actual Spending": st.column_config.NumberColumn("Actual Spending")
         },
         num_rows="dynamic", # Key setting to allow adding/deleting rows
         hide_index=True
+        key="data_editor_manual"
     )
+
+    # --- RERUN LOGIC TO ENSURE IMMEDIATE REFLECTION ---
+    # Check if the edited DataFrame is different from the stored state
+    if not edited_df.equals(st.session_state.editable_df):
+        st.session_state.editable_df = edited_df.copy()
+        # Force a rerun to stabilize the state and immediately show changes
+        st.rerun() 
+    
     # Update the session state and use the edited DataFrame for analysis
     st.session_state.editable_df = edited_df
     df = edited_df.copy()
