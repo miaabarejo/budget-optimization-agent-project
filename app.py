@@ -23,6 +23,10 @@ EDITOR_INITIAL_DATA = {
 # --- SESSION STATE INITIALIZATION ---
 # Initialize session state for the editable DataFrame if it doesn't exist
 if 'editable_df' not in st.session_state:
+    df_init = pd.DataFrame(EDITOR_INITIAL_DATA)
+    # 🚨 FIX: Explicitly cast money columns to integer type
+    df_init['Allocated Budget'] = df_init['Allocated Budget'].astype(int)
+    df_init['Actual Spending'] = df_init['Actual Spending'].astype(int)
     st.session_state.editable_df = pd.DataFrame(EDITOR_INITIAL_DATA)
 
 
