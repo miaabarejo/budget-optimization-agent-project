@@ -41,3 +41,12 @@ To run this application on your local machine, follow these steps.
 ```bash
 git clone https://github.com/miaabarejo/budget-optimization-agent-project
 cd budget-optimization-agent-project
+
+
+## 🛣️ Future Enhancements
+
+The following improvements are planned or welcomed as contributions:
+
+* **Structured Output:** Use a structured output parser (e.g., Pydantic) to force the AI's recommendations into a consistent, table-ready format.
+* **Trend Analysis:** Integrate time-series data to allow the AI to identify spending trends over several quarters, providing deeper context for reallocations.
+* **Interactive Constraints:** Add sliders or input boxes to allow users to specify reallocation constraints (e.g., "Minimum $5,000 for Marketing").
