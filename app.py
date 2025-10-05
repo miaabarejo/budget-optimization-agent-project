@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import pandas as pd
+import matplotlib.ticker as ticker
 import matplotlib.pyplot as plt
 from langchain.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI # Use the modern, installed package
@@ -78,6 +79,7 @@ if st.button("🧠 Run AI Budget Analysis"):
     fig, ax = plt.subplots(figsize=(10, 5))
     ax.bar(df_result["Department"], df_result["Allocated Budget"], label="Allocated Budget", alpha=0.6, color='skyblue')
     ax.bar(df_result["Department"], df_result["Actual Spending"], label="Actual Spending", alpha=0.6, color='salmon')
+    ax.yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:,.0f}')) # Add Comma Separator to Y-Axis
     ax.set_ylabel("USD")
     ax.set_title("Departmental Budget vs. Actual Spending")
     ax.legend()
