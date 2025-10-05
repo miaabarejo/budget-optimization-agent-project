@@ -41,7 +41,7 @@ To run this application on your local machine, follow these steps.
 ```bash
 git clone https://github.com/miaabarejo/budget-optimization-agent-project
 cd budget-optimization-agent-project
-
+```
 
 ## 🛣️ Future Enhancements
 
