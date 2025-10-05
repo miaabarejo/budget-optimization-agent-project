@@ -128,8 +128,9 @@ elif data_input_mode == 'Manual Data Entry':
         st.session_state.editable_df,
         column_config={
             "Department": st.column_config.TextColumn("Department"),
-            "Allocated Budget": st.column_config.NumberColumn("Allocated Budget", format="%,d"),
-            "Actual Spending": st.column_config.NumberColumn("Actual Spending", format="%,d")
+            # FIX: Use reliable Streamlit number format for thousands separator
+            "Allocated Budget": st.column_config.NumberColumn("Allocated Budget", format="###,###"),
+            "Actual Spending": st.column_config.NumberColumn("Actual Spending", format="###,###")
         },
         num_rows="dynamic", # Key setting to allow adding/deleting rows
         hide_index=True
@@ -140,13 +141,21 @@ elif data_input_mode == 'Manual Data Entry':
 
 
 # --- DISPLAY DATA AND RUN ANALYSIS ---
-# The previous redundant display block has been removed for a cleaner interface.
 
 if df is not None and not df.empty:
     
-    # st.subheader("💵 Current Budget Overview") # REDUNDANT SUBHEADER REMOVED
-    
-    # The editable table (or the file uploader) serves as the primary data display.
+    # If the user is in Upload Mode, show the data read from the file
+    if data_input_mode == 'Upload File':
+        st.subheader("💵 Current Budget Overview")
+        st.dataframe(
+            df.style.format(
+                {
+                    "Allocated Budget": "{:,.0f}",
+                    "Actual Spending": "{:,.0f}"
+                }
+            ),
+            hide_index=True
+        )
 
     # 2. Analysis Button and Results Section
     if st.button("🧠 Run AI Budget Analysis"):
