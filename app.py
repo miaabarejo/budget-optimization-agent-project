@@ -24,10 +24,10 @@ EDITOR_INITIAL_DATA = {
 # Initialize session state for the editable DataFrame if it doesn't exist
 if 'editable_df' not in st.session_state:
     df_init = pd.DataFrame(EDITOR_INITIAL_DATA)
-    # 🚨 FIX: Explicitly cast money columns to integer type
+    # Ensure money columns are typed as integers
     df_init['Allocated Budget'] = df_init['Allocated Budget'].astype(int)
     df_init['Actual Spending'] = df_init['Actual Spending'].astype(int)
-    st.session_state.editable_df = pd.DataFrame(EDITOR_INITIAL_DATA)
+    st.session_state.editable_df = df_init.copy() # Store the properly typed DF
 
 
 # --- SECURITY STEP: Load API Key from Streamlit Secrets ---
@@ -132,9 +132,9 @@ elif data_input_mode == 'Manual Data Entry':
         st.session_state.editable_df,
         column_config={
             "Department": st.column_config.TextColumn("Department"),
-            # FIX: Use reliable Streamlit number format for thousands separator
-            "Allocated Budget": st.column_config.NumberColumn("Allocated Budget", format="###,###"),
-            "Actual Spending": st.column_config.NumberColumn("Actual Spending", format="###,###")
+            # FIX: REMOVED custom formatting to avoid ###,### error
+            "Allocated Budget": st.column_config.NumberColumn("Allocated Budget"),
+            "Actual Spending": st.column_config.NumberColumn("Actual Spending")
         },
         num_rows="dynamic", # Key setting to allow adding/deleting rows
         hide_index=True
@@ -148,7 +148,7 @@ elif data_input_mode == 'Manual Data Entry':
 
 if df is not None and not df.empty:
     
-    # If the user is in Upload Mode, show the data read from the file
+    # If the user is in Upload Mode, show the formatted data read from the file
     if data_input_mode == 'Upload File':
         st.subheader("💵 Current Budget Overview")
         st.dataframe(
@@ -176,7 +176,7 @@ if df is not None and not df.empty:
             ax.bar(df_result["Department"], df_result["Allocated Budget"], label="Allocated Budget", alpha=0.6, color='skyblue')
             ax.bar(df_result["Department"], df_result["Actual Spending"], label="Actual Spending", alpha=0.6, color='salmon')
             
-            # Add Comma Separator to Y-Axis
+            # Add Comma Separator to Y-Axis (this works fine)
             ax.yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:,.0f}')) 
             
             ax.set_ylabel("USD")
