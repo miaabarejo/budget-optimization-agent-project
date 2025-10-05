@@ -140,20 +140,13 @@ elif data_input_mode == 'Manual Data Entry':
 
 
 # --- DISPLAY DATA AND RUN ANALYSIS ---
+# The previous redundant display block has been removed for a cleaner interface.
 
 if df is not None and not df.empty:
-    st.subheader("💵 Current Budget Overview")
     
-    # Display the final, formatted DataFrame used for analysis
-    st.dataframe(
-        df.style.format(
-            {
-                "Allocated Budget": "{:,.0f}",
-                "Actual Spending": "{:,.0f}"
-            }
-        ),
-        hide_index=True
-    )
+    # st.subheader("💵 Current Budget Overview") # REDUNDANT SUBHEADER REMOVED
+    
+    # The editable table (or the file uploader) serves as the primary data display.
 
     # 2. Analysis Button and Results Section
     if st.button("🧠 Run AI Budget Analysis"):
