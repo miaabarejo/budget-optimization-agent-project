@@ -57,7 +57,15 @@ st.title("📊 Budget Optimization Agent")
 df = load_budget_data()
 
 st.subheader("💵 Current Budget Overview")
-st.dataframe(df) # Display the raw data
+# Display the raw data
+st.dataframe(
+    df.style.format(
+        {
+            "Allocated Budget": "{:,.0f}",
+            "Actual Spending": "{:,.0f}"
+        }
+    )
+)
 
 if st.button("🧠 Run AI Budget Analysis"):
     # Use a spinner to show progress while calling the external API
