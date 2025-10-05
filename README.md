@@ -35,9 +35,9 @@ To run this application on your local machine, follow these steps.
 ### Prerequisites
 * Python 3.10+
 * Conda/Anaconda (Recommended for environment management)
-* **OpenAI API Key**
+* OpenAI API Key
 
 ### Step 1: Clone the Repository
 ```bash
-git clone [https://github.com/YourUsername/budget-optimization-agent-project.git](https://github.com/YourUsername/budget-optimization-agent-project.git)
+git clone https://github.com/miaabarejo/budget-optimization-agent-project
 cd budget-optimization-agent-project
