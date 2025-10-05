@@ -5,6 +5,7 @@
 The **Budget Optimization Agent** is an AI-powered financial web application built to analyze and optimize departmental spending using large language models. It provides quick insights into budget performance, highlights areas of inefficiency, and generates actionable, prioritized recommendations.
 
 ### Key Features
+* **Flexible Input:** Supports both file uploads (CSV/Excel) and manual data entry via an interactive table editor.
 * **Data Visualization:** Displays budget vs. actual spending using a clear, comma-formatted stacked bar chart for immediate visual assessment.
 * **Intelligent Analysis:** Uses **LangChain** and **OpenAI (GPT-3.5/4)** to interpret financial data (allocated vs. actual spending).
 * **Actionable Recommendations:** Generates suggestions for budget reallocation and cost-saving strategies in clear bullet points.
