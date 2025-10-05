@@ -13,6 +13,19 @@ st.title("📊 Budget Optimization Agent")
 # Define the expected columns for consistency
 EXPECTED_COLUMNS = ["Department", "Allocated Budget", "Actual Spending"]
 
+# Define a simple DataFrame structure for the editor's initial state
+EDITOR_INITIAL_DATA = {
+    "Department": ["Marketing", "Sales", "Engineering", "HR", "IT"],
+    "Allocated Budget": [80000, 60000, 150000, 40000, 50000],
+    "Actual Spending": [95000, 58000, 140000, 30000, 60000]
+}
+
+# --- SESSION STATE INITIALIZATION ---
+# Initialize session state for the editable DataFrame if it doesn't exist
+if 'editable_df' not in st.session_state:
+    st.session_state.editable_df = pd.DataFrame(EDITOR_INITIAL_DATA)
+
+
 # --- SECURITY STEP: Load API Key from Streamlit Secrets ---
 if 'OPENAI_API_KEY' in st.secrets:
     os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
@@ -39,6 +52,11 @@ def analyze_budget(budget_df, prompt_template):
     if not os.environ.get('OPENAI_API_KEY'):
         return budget_df, "Error: API Key is missing. Cannot run analysis."
     
+    # Ensure money columns are numeric before sending to LLM
+    budget_df["Allocated Budget"] = pd.to_numeric(budget_df["Allocated Budget"], errors='coerce')
+    budget_df["Actual Spending"] = pd.to_numeric(budget_df["Actual Spending"], errors='coerce')
+    budget_df = budget_df.dropna(subset=["Allocated Budget", "Actual Spending"])
+    
     table = budget_df.to_string(index=False)
     llm = ChatOpenAI(temperature=0.3)
     prompt = budget_template.format(budget_table=table)
@@ -47,17 +65,8 @@ def analyze_budget(budget_df, prompt_template):
     summary = llm.invoke(prompt).content 
     return budget_df, summary
 
-# --- DATA LOADING FUNCTIONS ---
 
-@st.cache_data
-def load_mock_data():
-    """Loads the fixed mock data for manual mode."""
-    data = {
-        "Department": ["Marketing", "Sales", "Engineering", "HR", "IT", "Operations"],
-        "Allocated Budget": [80000, 60000, 150000, 40000, 50000, 70000],
-        "Actual Spending": [95000, 58000, 140000, 30000, 60000, 85000]
-    }
-    return pd.DataFrame(data)
+# --- DATA LOADING FUNCTIONS ---
 
 def load_uploaded_data(uploaded_file):
     """Loads CSV or Excel data from the uploader."""
@@ -90,27 +99,44 @@ def load_uploaded_data(uploaded_file):
         return None
 
 # -------------------------------------------------------------
-# --- STREAMLIT APPLICATION LAYOUT (Modified for Choice) ---
+# --- STREAMLIT APPLICATION LAYOUT ---
 # -------------------------------------------------------------
 
 data_input_mode = st.radio(
     "Select Data Input Mode:",
-    ('Upload File', 'Use Mock Data')
+    ('Upload File', 'Manual Data Entry')
 )
 
 df = None
+
 if data_input_mode == 'Upload File':
     uploaded_file = st.file_uploader(
         "Upload Budget Data (CSV or Excel)",
         type=['csv', 'xlsx', 'xls'],
+        key="uploader_key",
         help="File must have exactly three columns in this order: Department, Allocated Budget, Actual Spending."
     )
     if uploaded_file is not None:
         df = load_uploaded_data(uploaded_file)
 
-elif data_input_mode == 'Use Mock Data':
-    st.info("Using built-in sample data for analysis.")
-    df = load_mock_data()
+elif data_input_mode == 'Manual Data Entry':
+    st.subheader("📝 Edit Budget Data Manually")
+    st.info("Edit values, add new rows (➕), or delete rows (🗑️) as needed.")
+    
+    # Use st.data_editor to allow adding/deleting rows
+    edited_df = st.data_editor(
+        st.session_state.editable_df,
+        column_config={
+            "Department": st.column_config.TextColumn("Department"),
+            "Allocated Budget": st.column_config.NumberColumn("Allocated Budget", format="%,d"),
+            "Actual Spending": st.column_config.NumberColumn("Actual Spending", format="%,d")
+        },
+        num_rows="dynamic", # Key setting to allow adding/deleting rows
+        hide_index=True
+    )
+    # Update the session state and use the edited DataFrame for analysis
+    st.session_state.editable_df = edited_df
+    df = edited_df.copy()
 
 
 # --- DISPLAY DATA AND RUN ANALYSIS ---
@@ -118,24 +144,25 @@ elif data_input_mode == 'Use Mock Data':
 if df is not None and not df.empty:
     st.subheader("💵 Current Budget Overview")
     
-    # Display DataFrame with comma formatting
+    # Display the final, formatted DataFrame used for analysis
     st.dataframe(
         df.style.format(
             {
                 "Allocated Budget": "{:,.0f}",
                 "Actual Spending": "{:,.0f}"
             }
-        )
+        ),
+        hide_index=True
     )
 
     # 2. Analysis Button and Results Section
     if st.button("🧠 Run AI Budget Analysis"):
-        # Ensure the key is available before calling the API
         if 'OPENAI_API_KEY' not in os.environ:
              st.error("API Key is missing. Please configure the 'OPENAI_API_KEY' secret in Streamlit Cloud.")
         else:
             with st.spinner("Calling GPT to generate recommendations..."):
-                df_result, result_text = analyze_budget(df, budget_template)
+                # Pass the data to the analysis function
+                df_result, result_text = analyze_budget(df.copy(), budget_template)
             
             # --- Chart Display ---
             st.subheader("📈 Budget Performance Chart")
@@ -156,5 +183,6 @@ if df is not None and not df.empty:
             st.subheader("✨ AI Recommendations & Cost-Saving Measures")
             st.markdown(result_text)
             
-elif df is None:
+else:
+    # Display instruction when no file is uploaded or data is entered
     st.info("Please select an input mode and provide data to begin the analysis.")
