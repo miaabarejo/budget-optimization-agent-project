@@ -9,7 +9,7 @@ from langchain_openai import ChatOpenAI # Use the modern, installed package
 # The code checks for the secret and sets it as an OS environment variable
 # so LangChain's ChatOpenAI can automatically find it.
 if 'OPENAI_API_KEY' in st.secrets:
-    os.environ['OPENAI_API_KEY'] = st.secrets["secrets"]['OPENAI_API_KEY']
+    os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
 else:
     st.error("OpenAI API Key not found. Please configure the 'OPENAI_API_KEY' secret in Streamlit Cloud.")
 
