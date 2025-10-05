@@ -62,8 +62,8 @@ st.subheader("💵 Current Budget Overview")
 st.dataframe(
     df.style.format(
         {
-            "Allocated Budget ($)": "{:,.0f}",
-            "Actual Spending ($)": "{:,.0f}"
+            "Allocated Budget": "{:,.0f}",
+            "Actual Spending": "{:,.0f}"
         }
     )
 )
