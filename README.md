@@ -24,7 +24,7 @@ The **Budget Optimization Agent** is an AI-powered financial web application bui
 
 You can access the live, deployed version of the application here:
 
-> **[[Insert Streamlit Cloud URL Here](https://budget-optimization-agent-project.streamlit.app/)]**
+🌐 Live Demo: [Budget Optimizer on Streamlit](https://budget-optimization-agent-project.streamlit.app/)
 
 ***
 
