@@ -136,7 +136,7 @@ elif data_input_mode == 'Manual Data Entry':
             "Actual Spending": st.column_config.NumberColumn("Actual Spending")
         },
         num_rows="dynamic", # Key setting to allow adding/deleting rows
-        hide_index=True
+        hide_index=True,
         key="data_editor_manual"
     )
 
